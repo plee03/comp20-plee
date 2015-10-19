@@ -6,6 +6,7 @@ function parse() {
         for (count = 0; count < parsed_mes.length; count++) {
             messages.innerHTML += parsed_mes[count]["content"] + " "
                                   parsed_mes[count]["username"] + "</br>"
+        }
     };
     messages_json.open("GET", "data.json"); 
     messages_json.send();
