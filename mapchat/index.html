@@ -10,8 +10,8 @@
         var login = "RoyDuke";
         function getSendLocation() {
             navigator.geolocation.getCurrentPosition(function(pos) {
-                lat = pos.coords.latitude;
-                lng = pos.coords.longitude;
+                var lat = pos.coords.latitude;
+                var lng = pos.coords.longitude;
                 sendLocation(lat, lng);
             })
         }
