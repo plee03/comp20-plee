@@ -27,24 +27,30 @@
             xhr.setRequestHeader("Connection", "close");
             xhr.onreadystatechange = function() {
                 if (xhr.readyState == 4 && xhr.status == 200) {
-                    var json_data = xhr.responseText;
-                    initMap(lat, lng);
+                    var json_string = xhr.responseText;
+                    var json_data = JSON.parse(json_string);
+                    initMap(json_data);
                 }
             }
             xhr.send(params);
         }
-        function initMap(lat, lng) {
+        function initMap(json_locs) {
             var loc = new google.maps.LatLng(lat, lng);
             var myOptions = {
-                center: loc,
                 zoom: 8
             };
+i                      
             var map = new google.maps.Map(document.getElementById("map"), myOptions);
-            var marker = new google.maps.Marker({
-                position: loc,
-                title: "Me" 
-            });
-            marker.setMap(map);
+            for (i = 0; i < json_locs.length(); i++) {
+                var lat = json_locs[i][lat];
+                var lng = json_locs[i][lng];
+                var marker = new google.maps.Marker({
+                    position: {lat: lat, lng : lng}
+                });
+                marker.setMap(map);
+                
+            }
+            
         }
     </script>
 </head>
