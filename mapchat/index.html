@@ -33,12 +33,18 @@
             }
             xhr.send(params);
         }
-        var map;
         function initMap(lat, lng) {
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: {lat:0, lng:0},
-                zoom:8 
+            var loc = new google.maps.LatLng(lat, lng);
+            var myOptions = {
+                center: loc,
+                zoom: 8
+            };
+            var map = new google.maps.Map(document.getElementById("map"), myOptions);
+            var marker = new google.maps.Marker({
+                position: loc,
+                title: "Me" 
             });
+            marker.setMap(map);
         }
     </script>
 </head>
