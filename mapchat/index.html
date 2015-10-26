@@ -5,6 +5,9 @@
     <meta charset="utf-8" />
     <link rel="stylesheet" href="style.css">
     <title>Geolocation</title>
+    <script async defer 
+        src="https://maps.googleapis.com/&callback=initMap">
+    </script>
     <script>
         var login = "RoyDuke";
         function getSendLocation() {
@@ -39,9 +42,6 @@
                 zoom:8 
             });
         }
-    </script>
-    <script async defer 
-        src="https://maps.googleapis.com/&callback=initMap">
     </script>
 </head>
 <body onload="getSendLocation()">
