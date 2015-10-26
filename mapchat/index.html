@@ -5,8 +5,21 @@
 <head>
     <meta charset="utf-8" />
     <title>Geolocation</title>
+    <script>
+        function getSendLocation() {
+            navigator.geolocation.getCurrentPosition(function(pos) {
+                lat = pos.coords.latitude;
+                lng = pos.coords.longitude;
+                sendLocation();
+            })
+        }
+        function sendLocation() {
+            console.log(lat);
+            console.log(lng);
+        }
+    </script>
 </head>
-<body>
+<body onload="getSendLocation()">
 </body>
 </html>
 
