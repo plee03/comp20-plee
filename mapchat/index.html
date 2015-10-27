@@ -46,7 +46,7 @@
                 var marker = new google.maps.Marker({
                     position: {lat: lat, lng : lng}
                 });
-                var distance = haversine_distance;
+                var distance = haversine_distance(myLoc.lat, lat, myLoc.lng, lng);
                 var infoString = json_locs[i]["login"] + "\n" + 
                                  json_locs[i]["message"] + "\n" +
                                  "Distance:" + distance;
