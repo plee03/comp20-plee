@@ -29,14 +29,14 @@
                 if (xhr.readyState == 4 && xhr.status == 200) {
                     var json_string = xhr.responseText;
                     var json_data = JSON.parse(json_string);
-                    initMap(json_data);
+                    initMap(json_data, {lat: lat, lng: lng});
                 }
             }
             xhr.send(params);
         }
-        function initMap(json_locs) {
+        function initMap(json_locs, myLoc) {
             var myOptions = {
-                center: {lat: -34.397, lng: 150.644},
+                center: myLoc,
                 zoom: 8
             };
             var map = new google.maps.Map(document.getElementById("map"), myOptions);
