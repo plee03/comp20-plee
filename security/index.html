@@ -1,0 +1,63 @@
+<html>
+<head>
+<meta charset="utf-8" />
+<title>Assignment 4</title>
+</head>
+<body>
+Security and Privacy Assessment of 
+by Peter Lee
+
+<h1>Introduction</h1>
+This document describes security vulnerabilities in a Heroku app that provides the following functionality:
+<ol>
+    <li>A HTTP POST API that takes a login, a latitude, a longitude, and a message, and stores the data
+    in a database</li>
+    <li>A HTTP GET API that returns the most recent entry from a login specified as a query.</li>
+    <li>An index page that formats displays all data entered into the database.</li>
+</ol>
+
+<h1>Methodology</h1>
+Testing was mostly performed by entering appropriate urls into the Firefox web browser to 
+do GET requests with queries, and the curl command to do POST requests with the appropriate
+parameters. There was a small amount of black box testing, but the vulnerabilities were mostly
+discovered upon observation of the source code, white box testing.
+<h1>Abstract of Findings</h1>
+There are several important privacy and security issues with this Heroku app.
+<ul>
+    <li> Code can be injected into the index page, which can be used to make visitors
+    see unwanted content, redirect visitors to different pages, and so on. This is a vulnerability
+    of high importance.</li>
+    <li> Unwanted data can be inserted into the Heroku app's database, which uses up allotted database
+    space and could disrupt searches</li>
+    <li> Arbitrary data can be obtained from the Heroku app's database, which is a potential privacy risk.</li>
+</ul>
+
+<h1>Issues Found</h1>
+
+<h3>XSS vulnerability</h3>
+This vulnerability affects the index.html page and the POST API.
+<h5>Severity: High</h5>
+Because messages are not sanitized when they are sent to the database via .../sendLocation, 
+any HTML or Javascript code can be sent to the database. When this code is retreived and
+shown on the page index.html, the code can be run, which a high security risk.</br>
+<img src="XSS1.png" alt="XSS command" /></br>
+The above image shows the curl command that can inject code. Note the code in the message
+parameter.</br>
+<img src="XSS2.png" alt="Injecting html for image" />
+The above image shows an image that was injected via the previous command. While this
+example is relatively innocuous, even Javascript code can be run, which is a severe vulnerability.
+This problem can be fixed by sanitizing the message parameter on the server, and removing characters 
+needed to indicate HTML code such as &lt;, &gt;.
+<h3>Adding additional fields</h3>
+<img src="morefields2.png" alt="Command to add more fields"/></br>
+
+<img src="morefields3.png" alt="Showing documents with more fields"/>
+<h3>Modifying queries to Mongodb database</h3>
+<img src="mongo.png" alt="JSON result from altering find query" />
+
+
+
+<h1>Conclusion</h1>
+
+</body>
+</html>
