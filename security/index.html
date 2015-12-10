@@ -1,10 +1,12 @@
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="utf-8" />
+<link rel="stylesheet" type="text/css" href="style.css">
 <title>Assignment 4</title>
 </head>
 <body>
-Security and Privacy Assessment of 
+Security and Privacy Assessment
 by Peter Lee
 
 <h1>Introduction</h1>
@@ -15,12 +17,13 @@ This document describes security vulnerabilities in a Heroku app that provides t
     <li>A HTTP GET API that returns the most recent entry from a login specified as a query.</li>
     <li>An index page that formats displays all data entered into the database.</li>
 </ol>
-
 <h1>Methodology</h1>
-Testing was mostly performed by entering appropriate urls into the Firefox web browser to 
-do GET requests with queries, and the curl command to do POST requests with the appropriate
-parameters. There was a small amount of black box testing, but the vulnerabilities were mostly
-discovered upon observation of the source code, white box testing.
+<p>
+    Testing was mostly performed by entering appropriate urls into the Firefox web browser to 
+    do GET requests with queries, and the curl command to do POST requests with the appropriate
+    parameters. There was a small amount of black box testing, but the vulnerabilities were mostly
+    discovered upon observation of the source code, white box testing.
+</p>
 <h1>Abstract of Findings</h1>
 There are several important privacy and security issues with this Heroku app.
 <ul>
@@ -35,29 +38,70 @@ There are several important privacy and security issues with this Heroku app.
 <h1>Issues Found</h1>
 
 <h3>XSS vulnerability</h3>
-This vulnerability affects the index.html page and the POST API.
-<h5>Severity: High</h5>
-Because messages are not sanitized when they are sent to the database via .../sendLocation, 
-any HTML or Javascript code can be sent to the database. When this code is retreived and
-shown on the page index.html, the code can be run, which a high security risk.</br>
-<img src="XSS1.png" alt="XSS command" /></br>
-The above image shows the curl command that can inject code. Note the code in the message
-parameter.</br>
-<img src="XSS2.png" alt="Injecting html for image" />
-The above image shows an image that was injected via the previous command. While this
-example is relatively innocuous, even Javascript code can be run, which is a severe vulnerability.
-This problem can be fixed by sanitizing the message parameter on the server, and removing characters 
-needed to indicate HTML code such as &lt;, &gt;.
+This vulnerability affects the index.html page and the POST /sendLocation API.
+<h4>Severity: High</h4>
+<p>
+    Because messages are not sanitized when they are sent to the database via .../sendLocation, 
+    any HTML or Javascript code can be sent to the database. When this code is retreived and
+    shown on the page index.html, the code can be run, which a high security risk.
+</p>
+<img class="image" src="XSS1.png" alt="XSS command" />
+<p>
+    The above image shows the curl command that can inject code. Note the code in the message
+    parameter.
+</p>
+<img class="image" src="XSS2.png" alt="Injecting html for image" />
+<p>
+    The above image shows an image that was injected via the previous command. While this
+    example is relatively innocuous, even Javascript code can be run, which is a severe vulnerability.
+    This problem can be fixed by sanitizing the message parameter on the server, and removing characters 
+    needed to indicate HTML code such as &lt;, &gt;.
+</p>
 <h3>Adding additional fields</h3>
-<img src="morefields2.png" alt="Command to add more fields"/></br>
-
-<img src="morefields3.png" alt="Showing documents with more fields"/>
+This vulnerability affects the POST API.
+<h4>Severity: Low</h4>
+<p>
+    Because the object representing the parsed parameter is nearly directly added to the database,
+    any additional parameters will also be inserted with the object. This is mainly an unwanted
+    inconvenience, as this can use up unnecessary data and disrupt queries to the database.
+</p>
+<img class="image" src="morefields2.png" alt="Command to add more fields"/>
+<p>
+    The above image shows a POST request done using curl, with the additional key-value pair
+    "NOTAREALFIELD=QWERTYUIOP", and the successful response it receives.
+</p>
+<img class="image" src="morefields3.png" alt="Showing documents with more fields"/>
+<p>
+    Looking into the database itself reveals that the additional fields were in fact added to the
+    database.
+    This problem can be fixed by explicitly assigning the appropriate object attributes to an initially
+    empty object, instead of directly inserting the parsed parameters. This way, only desired parameters
+    are inserted into the database.
+</p>
 <h3>Modifying queries to Mongodb database</h3>
-<img src="mongo.png" alt="JSON result from altering find query" />
+This vulnerability affects the GET /getLatest.json API. 
 
-
-
+<h4>Severity: Medium</h4>
+<p>
+    When this API queries its database, it searches for the parsed query's value. If the query happens to
+    be a key-value pair corresponding to a Mongodb operator such as $ne, these operators then affect the
+    query. By using the $ne operator, any arbitrary document in the same collection can be returned, which
+    is a privacy risk.
+</p>
+<img class="image" src="mongo.png" alt="JSON result from altering find query" />
+<p>
+    The above image shows the URL used for the HTTP Get request, and the result that it returns. While this
+    particular document can already be accessed on the index page, it is conceivable that this exploit could return
+    a document in the same collection that is not exposed on the index.html page.
+    This problem can be fixed by ensuring that the parsed query is a string, using isString for example.
+</p>
 <h1>Conclusion</h1>
+<p>
+    There are several critical security issues in the given application as described. Following the solutions specified 
+    for each issue should solve the vulnerabilities, improving the security of the application. Other possible recommendations are
+    limiting the amount of POST requests that can be sent and stored in the database, as this could be prohibitive for
+    space.
+</p>
 
 </body>
 </html>
