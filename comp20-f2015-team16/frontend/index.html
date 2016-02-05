@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" charset="UTF-8">
+ 
+		<title>Home</title>
+
+		<!-- jquery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+		
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		
+		<!-- Custom Fonts --> 
+	    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	    
+		<link href="grayscale.css" rel="stylesheet">
+
+		<script>
+			var genre1 = "";
+			var genre2 = "";
+
+			function genrePressed(event) {
+				if (event.target.id == genre1) {
+					document.getElementById(event.target.id).removeAttribute("style");
+					genre1 = genre2;
+					genre2 = "";
+				} else if (event.target.id == genre2) {
+					document.getElementById(event.target.id).removeAttribute("style");
+					genre2 = "";
+				} else if (genre1 == "") {
+					document.getElementById(event.target.id).setAttribute("style", "background: -webkit-radial-gradient(#E6E9F0, #434A5A);");
+				    genre1 = event.target.id;
+				} else if (genre2 == "") {
+					document.getElementById(event.target.id).setAttribute("style", "background: -webkit-radial-gradient(#E6E9F0, #434A5A);");
+					genre2 = event.target.id;
+			    } 
+			}
+
+			function searchPressed() {
+				if (genre1 == "") {  //if user hasn't chosen any genres, don't let them search
+					console.log("alert");
+					alert("Please select up to two genres before searching.");
+				} else { 
+					sessionStorage.setItem('genre1', genre1);
+					sessionStorage.setItem('genre2', genre2);
+					window.location.href = "results.html";
+				}
+			}
+
+		</script>
+	</head>
+
+ 	<body>
+ 		<!-- Intro Header -->
+	    <section class="intro">
+	    	<div class="container">
+    			<div class="intro-body col-md-8 col-md-offset-2 col-xs-12">
+				  	<h1 class="brand-heading">WMFO Program Finder</h1>
+		            <p class="intro-text">Find out which WMFO radio shows are right for you.</p>
+		            <a href="#genres" class="btn btn-circle page-scroll">
+		                <i class="fa fa-angle-double-down animated"></i>
+		            </a>
+		        </div>
+	        </div>
+	    </section>
+
+	    <!-- Choose Genre Section -->
+	    <section id="genres" class="genre-section">
+	    	<div class="page-header">
+		  		<h1>Choose up to two genres</h1>
+			</div>
+	        <div class="genre-buttons">
+	            <div class="container">
+	            	<p><button id="rock" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Rock</button>
+					<button id="pop" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Pop</button>
+					<button id="metal" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Metal</button>
+					<button id="reggae" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Reggae</button></p>
+
+					<p><button id="r&b/soul" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">R&B/Soul</button>
+					<button id="classical" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Classical</button>
+					<button id="country" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Country</button>
+					<button id="jazz" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Jazz</button>
+					<button id="funk" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Funk</button> </p>
+					
+					<p><button id="folk" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Folk</button>
+					<button id="world" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">World</button>
+					<button id="blues" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Blues</button>
+					<button id="electronic" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Electronic</button>
+					<button id="hip-hop" type="button" class="btn btn-default btn-lg" onclick="genrePressed(event)">Hip-Hop</button></p>
+				
+					<p><button id="Search" type="button" class="btn btn-success btn-lg" onclick="searchPressed()">Search</button></p>  
+	            </div>
+	        </div>
+	    </section>
+
+	<!-- Plugin JavaScript -->
+    <script src="js/jquery.easing.min.js"></script>
+   <!-- Custom Theme JavaScript -->
+    <script src="js/grayscale.js"></script>
+
+	</body>
+	<footer></footer>
+
+</html>

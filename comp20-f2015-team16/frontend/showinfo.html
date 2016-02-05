@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<!-- showinfo.html -->
+
+<html lang="en">
+ 	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" charset="UTF-8">
+    	<title>WMFO Show Information</title>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    	<script src="Chart.js"></script>
+
+    	<link rel="stylesheet" href="showinfostyle.css">
+
+    	<script>
+    		// variables that are used in more than one function
+    		var showid;
+	    	var parsedData;
+	    	var keyArr = [];  // array of keys from the parsedData
+	    	var sortedData = [];  // array of objects that contains the single genres and their percentages
+	    						  // sorted by the percentage in descending order
+
+	    	$(document).ready(function(){
+				// gets showid from the results page
+				showid = sessionStorage.getItem('ShowId');
+				
+	    		xhr = new XMLHttpRequest();
+
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						var jsonData = xhr.responseText;
+						parsedData = JSON.parse(jsonData);
+
+						displayInfo();
+						sortArray();
+						drawPie();
+						drawBar();
+					}
+				}
+
+				var url = "https://wmfo-program-finder.herokuapp.com/showInfo?showid=" + showid;
+				xhr.open("GET", url, true);
+				xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				xhr.send(null);
+			});
+
+			function displayInfo() {
+				var showName = parsedData[0].ShowName;
+				var showDJArr = parsedData[0].ShowDJ;
+				var showDJs = "";
+				var showDayArr = parsedData[0].Days;
+				var showDays = "";
+				var showStart = parsedData[0].OnairTime;
+				var showEnd = parsedData[0].OffairTime;
+
+				showDJs = showDJArr[0];
+				// creates a string that lists all DJs, if there are mulitple
+				if (showDJArr.length >= 1) {
+					for (iter = 1; iter < showDJArr.length; iter++) {
+						showDJs += ", " + showDJArr[iter];
+					}
+				}
+
+				showDays = showDayArr[0];
+				// creates a string that lists all days, if there are multiple
+				if (showDayArr.length >= 1) {
+					for (iter = 1; iter < showDayArr.length; iter++) {
+						showDays += ", " + showDayArr[iter];
+					}
+				}
+
+				showStart = fixTime(showStart);
+				showEnd = fixTime(showEnd);
+
+				$('#firstLine').html( '<a href="results.html" id="backToResults" type="button" class="btn btn-success"><span class="glyphicon glyphicon-arrow-left"></span> BACK TO RESULTS</a>' 
+									+ "<h1>" + showName + "</h1>");
+
+				$("#showInfo").html("<p>Hosted by " + showDJs + "</p>" 
+									+ "<p>" + showDays + " " + showStart + " to " + showEnd + "</p>" 
+									+ "<hr/>");
+			}
+
+			// makes show times more readable
+			function fixTime(showTime) {
+				var hour = showTime.slice(0, -6);
+				var minute = showTime.slice(3, -3);
+
+				if (hour == 0) {
+					hour = 12;
+					showTime = hour + ":" + minute + " AM";
+				} else if (hour > 0 && hour < 12) {
+					if (hour < 10) {
+						hour = hour.slice(1);
+					}
+					showTime = hour + ":" + minute + " AM";
+				} else if (hour == 12) {
+					showTime = hour + ":" + minute + " PM";
+				} else if (hour > 12) {
+					hour -= 12;
+					showTime = hour + ":" + minute + " PM";
+				}
+
+				return showTime;
+			}
+
+			function sortArray() {
+				keyArr = Object.keys(parsedData[0]);
+
+				// creates an array of objects that contains the single genres and their percentages
+				// 'Percent' is the magic word for the single genres
+				// length of 'sortedData' will always be 14
+				for (iter = 0; iter < keyArr.length; iter++) {
+					if (keyArr[iter].search("Percent") != -1) {
+						sortedData.push({myKey: keyArr[iter], myValue: parsedData[0][keyArr[iter]]});
+					}
+				}
+
+				// sort the array by the values in descending order
+				sortedData.sort(function(a, b) {
+					return b.myValue - a.myValue;
+				});
+			}
+
+			function drawPie() {
+				var numSlice = 10;  // number of slices in the doughnut chart
+				var colorArr     = ["#FF6A6A", "#FDB45C", "#5ACFF5", "#46BFBD", "#4D6081"];
+				var highlightArr = ["#FF8787", "#FDC37C", "#7AD8F7", "#6ACBCA", "#808EA5"];
+				var pieData = [];  // array of objects
+
+				// creates the pieData object
+				for (iter = 0, cycle = 0; iter < numSlice; iter++, cycle++) {
+					// reuses the same set of colors
+					if (cycle == 5) {
+						cycle = 0;
+					}
+					pieData.push({value: Math.round((sortedData[iter].myValue + 0.00001) * 100) / 100,
+								  color: colorArr[cycle],
+								  highlight: highlightArr[cycle],
+								  label: sortedData[iter].myKey.slice(0, -7)}
+					);
+				}
+
+	    		var pieOptions = {
+	    			animation: true,
+	                animateScale: true,
+	                percentageInnerCutout : 50
+	            }
+
+	            // gets the pie chart canvas
+				var pieCtx = $('#pieCanvas').get(0).getContext("2d");
+	            // draws the pie chart
+	    		var pieChart = new Chart(pieCtx).Doughnut(pieData, pieOptions);
+			}
+
+			function drawBar() {
+				var numBar = 10;  // number of bars in the bar chart
+
+				var barData = {
+	                labels : [],
+	                datasets : [
+	                    {
+	                        fillColor: "#AF5FA7",
+	                        strokeColor: "#48A4D1",
+	                        highlightFill: "#C183BB",
+	                        data: []
+	                    },
+	                ]
+	            }
+
+	            // fills up the barData object with labels and data
+        		for (iter = 0; iter < numBar; iter++) {
+        			barData.labels[iter] = sortedData[iter].myKey.slice(0, -7);
+        			barData.datasets[0].data[iter] = Math.round((sortedData[iter].myValue + 0.00001) * 100) / 100;
+        		}
+
+	            var barOptions = {
+	                animation: true,
+	                responsive: false,
+	                barShowStroke: false,  // thick edges around the bars
+	                barValueSpacing: 1,    // spaces between the bars
+	                scaleOverride: true,
+	                scaleSteps: 10,
+	                scaleStartValue: 0,
+	                scaleStepWidth: 10
+	            };
+
+	            // gets the bar chart canvas
+	            var barCtx = $('#barCanvas').get(0).getContext("2d");
+	            // draws the bar chart
+	            var barChart = new Chart(barCtx).Bar(barData, barOptions);
+			}
+    	</script>
+
+	</head>
+  
+  	<body class="background">
+
+    	<div class="information">
+
+    		<div id="firstLine">
+    		</div>
+
+	    	<div id="showInfo">
+	    	</div>
+
+			<div id="chartInfo">
+				<p>Top 10 Genres</p>
+			</div>
+
+			<div id="chartsCanvas">
+				<canvas id="pieCanvas" width="400" height="400"></canvas>
+				<canvas id="barCanvas" width="400" height="400"></canvas>
+			</div>
+		</div>
+
+  	</body>
+
+</html>

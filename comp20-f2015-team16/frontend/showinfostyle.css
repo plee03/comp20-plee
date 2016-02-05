@@ -1,0 +1,129 @@
+/*	
+	showinfostyle.css
+  note: stylesheet for showinfo.html
+        This needs 'fonts' folder from bootstrap to get the glyphicon
+*/
+
+h1 {
+	font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	text-align: center;
+    margin-top: -30px;
+}
+
+a {
+    text-decoration: none;
+}
+
+.information {
+    background: #fff;
+    margin-top: 40px;
+    margin-left: 50px;
+    margin-right: 50px;
+    border-radius: 10px;
+}
+
+.background {
+    background: url("radioBoard.jpg");
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    background-size: cover;
+    -o-background-size: cover;
+}
+
+#firstLine {
+    margin-top: -10px;
+    margin-bottom: -10px;
+    max-height: 50px;
+}
+
+#backToResults {
+    margin-left: 10px; 
+    margin-top: 10px;
+}
+
+#showInfo {
+	font-family: Montserrat,"Helvetica Neue",Helvetica,Arial,sans-serif;
+	text-align: center;
+    padding-top: 1px;
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+#chartInfo{
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+#chartsCanvas {
+    padding-bottom: 30px;
+    padding-left: 80px;
+}
+
+#pieCanvas {
+    padding-right: 80px;
+}
+
+#barCanvas {
+    padding-right: 40px;
+}
+
+/* lines below are copied from bootstrap.css */
+
+.btn {
+  display: inline-block;
+  padding: 6px 12px;
+  margin-bottom: 0;
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 1.42857143;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+      -ms-user-select: none;
+          user-select: none;
+  background-image: none;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.btn-success {
+  color: #fff;
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+}
+
+.btn-success:hover {
+  color: #fff;
+  background-color: #449d44;
+  border-color: #398439;
+}
+
+@font-face {
+  font-family: 'Glyphicons Halflings';
+
+  src: url('./fonts/glyphicons-halflings-regular.eot');
+  src: url('./fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'), url('./fonts/glyphicons-halflings-regular.woff2') format('woff2'), url('./fonts/glyphicons-halflings-regular.woff') format('woff'), url('./fonts/glyphicons-halflings-regular.ttf') format('truetype'), url('./fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg');
+}
+
+.glyphicon {
+  position: relative;
+  top: 1px;
+  display: inline-block;
+  font-family: 'Glyphicons Halflings';
+  font-style: normal;
+  font-weight: normal;
+  line-height: 1;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.glyphicon-arrow-left:before {
+  content: "\e091";
+}

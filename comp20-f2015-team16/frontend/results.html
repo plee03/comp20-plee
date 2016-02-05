@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0" charset="UTF-8">
+
+		<title>Results</title>
+
+		<!-- jquery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+		
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+		
+		<!-- Custom Fonts --> 
+	    <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		
+		<link href="grayscale.css" rel="stylesheet">
+
+
+		<script>
+			var genre1 = "";
+			var genre2 = "";
+			var jsonData; 
+ 			var parsedData;	
+
+			$(document).ready(function() {
+
+				$(".fa-spinner").show();
+				genre1 = sessionStorage.getItem('genre1');
+				genre2 = sessionStorage.getItem('genre2');
+
+				xhr = new XMLHttpRequest();
+				
+				var url = "https://wmfo-program-finder.herokuapp.com/dataResults"
+				if (genre2 == "") {
+					url += "?genre1=" + encodeURIComponent(genre1); 
+				} else  {
+					url += "?genre1=" + encodeURIComponent(genre1) + "&genre2=" + encodeURIComponent(genre2); 
+				}
+
+				xhr.open("GET", url, true);
+				xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+				xhr.send(null);
+				
+				xhr.onreadystatechange = function() {
+					if (xhr.readyState == 4 && xhr.status == 200) {
+						$(".fa-spinner").hide();
+						jsonData = xhr.responseText;
+						parsedData = JSON.parse(jsonData);
+						loadPage();
+					}
+				};
+
+				$("#indexed-table").on("click", "tr", function(e) {
+				    var currentIndex = $(e.currentTarget).index();
+				    currentShowID = parsedData[currentIndex]["ShowId"];
+				    sessionStorage.setItem('ShowId', currentShowID);
+				   	window.location.href = 'showinfo.html';
+				});
+
+			});
+			
+			function loadPage() {
+
+				if (genre2 == "") {
+
+					$("#results").html("Showing results for " + genre1);
+
+					$("#table-head").html('<tr><th>Results</th><th>' + genre1 + '</th><th>Overall Match</th></tr>');
+										
+					for (var i = 0; i < parsedData.length; i++) { 
+						var overallPercent = Math.round(parsedData[i][genre1 + "Percent"]);
+						var progressColorClass = getProgressColor(overallPercent);
+
+						$("#table-body").append('<tr><td><a>' + parsedData[i]["ShowName"] + '</a></td><td>' + Math.round(parsedData[i][genre1 + "Percent"]) + '%' + '</td><td><div class="progress"><div class="progress-bar ' + progressColorClass + ' progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ' + overallPercent + '%;">' + overallPercent +'%</div></div></td></tr>');
+					}
+
+				} else {	
+
+					var combinedGenres = combineGenres();
+
+					$("#results").html("Showing results for " + genre1 + " and " + genre2);
+
+					$("#table-head").html('<tr><th>Results</th><th>' + genre1 + '</th><th>' + genre2 + '</th><th>Overall Match</th></tr>');
+					
+					for (var i = 0; i < parsedData.length; i++) { 
+						var overallPercent = Math.round(parsedData[i][combinedGenres]);
+						var progressColorClass = getProgressColor(overallPercent);
+
+						$("#table-body").append('<tr><td><a>' + parsedData[i]["ShowName"] + '</a></td><td>' + Math.round(parsedData[i][genre1 + "Percent"]) + '%' + '</td><td>' + Math.round(parsedData[i][genre2 + "Percent"]) + '%' + '</td><td><div class="progress"><div class="progress-bar ' + progressColorClass + ' progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="min-width: 2em; width: ' + overallPercent + '%;">' + overallPercent + '%</div></div></td></tr>');
+					}
+				}
+			}
+
+			function getProgressColor(overallPercent) {
+				if (overallPercent >= 40) {
+					return 'progress-bar-success';
+				} else if (overallPercent >= 20) {
+					return 'progress-bar-warning';
+				} else if (overallPercent >= 0) {							
+					return 'progress-bar-danger';
+				}
+			}
+
+			function combineGenres() {
+				if (genre1 < genre2) {
+					return genre1 + "-" + genre2;
+				} else if (genre2 < genre1) {
+					return genre2 + "-" + genre1;
+				}
+			}
+		</script>
+
+	</head>
+
+	<body class="results-background">
+		<div>												
+			<div class="page-header">
+			  <h1 id="results"></h1>	  
+			</div>
+			
+			<a href="index.html#genres" id="searchAgain" type="button" class="btn btn-success"><span class="glyphicon glyphicon-arrow-left"></span> Search Again</a>
+
+			<i class="fa fa-spinner fa-spin fa-5x"></i>
+ 
+			<!-- results table -->
+			<div class="results-table">
+				<table id="indexed-table" class="table table-hover">
+				    <thead id="table-head"></thead>
+				    <tbody id="table-body"></tbody>
+				    <tfoot>
+				    	<tr>
+				    		<td></td>
+				    		<td></td>
+				    		<td></td>
+				    	</tr>
+				    </tfoot>
+				 </table>
+			</div>
+		</div>
+	</body>
+
+</html>
